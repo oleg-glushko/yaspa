@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My TODOs</title>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
+
+        body {
+            font-family: "Roboto", 'Times New Roman', Times, serif;
+            width: 500px;
+            margin: auto;
+        }
+
+        h1 {
+            font-size: 3rem;
+        }
+
+        label {
+            font-style: italic;
+            display: block;
+            margin-bottom: 0.25em;
+        }
+
+        button, input {
+            font-family: inherit;
+            font-size: 1rem;
+            padding: .25rem .5rem;
+        }
+
+        button:enabled, button:disabled {
+            transition: color 0.5s ease-out;
+        }
+    </style>
+
+    <script type="module" src="todos.js"></script>
+</head>
+
+<body>
+    <h1>My TODOs</h1>
+
+    <div>
+        <label for="todo-input">New TODO</label>
+        <input type="text" id="todo-input" />
+        <button id="add-todo-btn" disabled>Add</button>
+    </div>
+
+    <ul id="todos-list"></ul>
+</body>
+</html>
