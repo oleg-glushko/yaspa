@@ -1,0 +1,27 @@
+<html>
+<head>
+    <style>
+        input {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <script type="module">
+        import { createApp, h, hFragment, hString } from 'https://unpkg.com/yaspa@2';
+
+        createApp({
+            state: 0,
+            reducers: {
+                add: (state, amount) => state + amount,
+            },
+            view: (state, emit) => h(
+                'button',
+                { on: { click: () => emit('add', 1) } },
+                [hString(`Total: ${state}`)]
+            )
+        }).mount(document.body);
+    </script>
+</body>
+
+</html>

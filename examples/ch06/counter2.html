@@ -1,0 +1,28 @@
+<html>
+<head>
+    <style>
+        input {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <script type="module">
+        import { createApp, h, hFragment, hString } from 'https://unpkg.com/yaspa@2';
+
+        createApp({
+            state: 0,
+            reducers: {
+                add: (state, amount) => state + amount,
+                sub: (state, amount) => state > 0 ? state - amount : state
+            },
+            view: (state, emit) => hFragment([
+                h('button', { on: { click: () => emit('sub', 1) } }, [hString('-')]),
+                h('span', {}, [hString(`Total: ${state}`)]),
+                h('button', { on: { click: () => emit('add', 1) } }, [hString('+')]),
+            ])
+        }).mount(document.body);
+    </script>
+</body>
+
+</html>
