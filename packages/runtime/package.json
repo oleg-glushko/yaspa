@@ -1,6 +1,6 @@
 {
   "name": "yaspa",
-  "version": "4.0.1",
+  "version": "5.0.0",
   "description": "Yet another single page application framework",
   "main": "dist/yaspa.js",
   "files": [
