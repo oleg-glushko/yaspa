@@ -3,20 +3,25 @@ import { withoutNulls } from './utils/arrays'
 export const DOM_TYPES = {
     TEXT: 'text',
     ELEMENT: 'element',
-    FRAGMENT: 'fragment'
+    FRAGMENT: 'fragment',
+    COMPONENT: 'component',
 };
 
 export function h(tag, props = {}, children = []) {
+    const type = typeof tag === 'string'
+        ? DOM_TYPES.ELEMENT
+        : DOM_TYPES.COMPONENT;
+
     return {
         tag,
         props,
+        type,
         children: mapTextNodes(withoutNulls(children)),
-        type: DOM_TYPES.ELEMENT,
     };
 }
 
 export function hString(str) {
-    return { type: DOM_TYPES.TEXT, value: str };
+    return { type: DOM_TYPES.TEXT, value: String(str) };
 }
 
 export function hFragment(vNodes) {
@@ -28,7 +33,13 @@ export function hFragment(vNodes) {
 
 function mapTextNodes(children) {
     return children.map((child) =>
-        typeof child === 'string' ? hString(child) : child);
+        typeof child === 'string'
+            || typeof child === 'number'
+            || typeof child === 'boolean'
+            || typeof child === 'bigint'
+            || typeof child === 'symbol'
+            ? hString(child)
+            : child);
 }
 
 export function extractChildren(vdom) {
@@ -39,7 +50,7 @@ export function extractChildren(vdom) {
 
     for (const child of vdom.children) {
         if (child.type === DOM_TYPES.FRAGMENT) {
-            children.push(...extractChildren(child), children);
+            children.push(...extractChildren(child));
         } else {
             children.push(child);
         }

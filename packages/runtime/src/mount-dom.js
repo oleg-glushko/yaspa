@@ -1,8 +1,9 @@
 import { DOM_TYPES } from "./h";
 import { setAttributes } from './attributes';
 import { addEventListeners } from './events';
+import { extractPropsAndEvents } from "./utils/props";
 
-export function mountDOM(vdom, parentEl, index) {
+export function mountDOM(vdom, parentEl, index, hostComponent = null) {
     switch (vdom.type) {
         case DOM_TYPES.TEXT: {
             createTextNode(vdom, parentEl, index);
@@ -10,12 +11,17 @@ export function mountDOM(vdom, parentEl, index) {
         }
 
         case DOM_TYPES.ELEMENT: {
-            createElementNode(vdom, parentEl, index);
+            createElementNode(vdom, parentEl, index, hostComponent);
             break;
         }
 
         case DOM_TYPES.FRAGMENT: {
-            createFragmentNodes(vdom, parentEl, index);
+            createFragmentNodes(vdom, parentEl, index, hostComponent);
+            break;
+        }
+
+        case DOM_TYPES.COMPONENT: {
+            createComponentNode(vdom, parentEl, index, hostComponent);
             break;
         }
 
@@ -34,29 +40,29 @@ function createTextNode(vdom, parentEl, index) {
     insert(textNode, parentEl, index);
 }
 
-function createFragmentNodes(vdom, parentEl, index) {
+function createFragmentNodes(vdom, parentEl, index, hostComponent) {
     const { children } = vdom;
     vdom.el = parentEl;
 
     children.forEach((child, i) =>
-        mountDOM(child, parentEl, index ? index + i : null));
+        mountDOM(child, parentEl, index ? index + i : null, hostComponent));
 }
 
-function createElementNode(vdom, parentEl, index) {
-    const { tag, props, children } = vdom;
+function createElementNode(vdom, parentEl, index, hostComponent) {
+    const { tag, children } = vdom;
 
     const element = document.createElement(tag);
-    addProps(element, props, vdom);
+    addProps(element, vdom, hostComponent);
     vdom.el = element;
 
-    children.forEach((child) => mountDOM(child, element));
+    children.forEach((child) => mountDOM(child, element, null, hostComponent));
     insert(element, parentEl, index);
 }
 
-function addProps(el, props, vdom) {
-    const { on: events, ...attrs } = props;
+function addProps(el, vdom, hostComponent) {
+    const { props: attrs, events } = extractPropsAndEvents(vdom);
 
-    vdom.listeners = addEventListeners(events, el);
+    vdom.listeners = addEventListeners(events, el, hostComponent);
     setAttributes(el, attrs);
 }
 
@@ -76,4 +82,15 @@ function insert(el, parentEl, index) {
     } else {
         parentEl.insertBefore(el, children[index]);
     }
+}
+
+function createComponentNode(vdom, parentEl, index, hostComponent) {
+    const Component = vdom.tag;
+    const { props, events } = extractPropsAndEvents(vdom);
+    const component = new Component(props, events, hostComponent);
+
+    component.mount(parentEl, index);
+
+    vdom.component = component;
+    vdom.el = component.firstElement;
 }

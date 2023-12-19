@@ -9,3 +9,7 @@ export function objectsDiff(oldObj, newObj) {
             && oldObj[key] !== newObj[key]),
     }
 }
+
+export function hasOwnProperty(obj, prop) {
+    return Object.prototype.hasOwnProperty.call(obj, prop);
+}
